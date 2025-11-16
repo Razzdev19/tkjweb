@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TKJ Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #000;
+        }
+
+        /* Animated Background */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 50%, #2d0052 100%);
+            z-index: -1;
+        }
+
+        .fog {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.3) 0%, transparent 70%);
+            animation: fogMove 20s ease-in-out infinite;
+        }
+
+        .fog:nth-child(2) {
+            animation: fogMove2 25s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes fogMove {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(180deg); }
+        }
+
+        @keyframes fogMove2 {
+            0%, 100% { transform: translate(10%, 10%) rotate(180deg); }
+            50% { transform: translate(-10%, -10%) rotate(360deg); }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 50%, #2d0052 100%);
+        }
+
+        .welcome-text {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #a855f7, #ec4899, #a855f7);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInOut 3s ease-in-out, shimmer 3s linear infinite;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .owner-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out 3.5s forwards;
+        }
+
+        .owner-profile img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #a855f7;
+            margin-bottom: 15px;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+        }
+
+        .owner-name {
+            font-size: 1.8rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Video Screen */
+        .video-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            background: #000;
+            opacity: 0;
+        }
+
+        .video-screen video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            opacity: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .request-btn {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s ease;
+            margin-bottom: 40px;
+        }
+
+        .request-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(124, 58, 237, 0.6);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a0033, #2d0052);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.5);
+            border: 2px solid #a855f7;
+        }
+
+        .modal-content img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #a855f7;
+            margin-bottom: 15px;
+        }
+
+        .modal-content h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .wa-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .wa-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .tab-btn {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(168, 85, 247, 0.3));
+            color: white;
+            border: 2px solid #7c3aed;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            box-shadow: 0 5px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .gallery img {
+            width: 100%;
+            border-radius: 15px;
+            border: 3px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+            border-color: #a855f7;
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5);
+        }
+
+        /* Music */
+        .music-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .music-container iframe {
+            border-radius: 15px;
+            border: 3px solid rgba(168, 85, 247, 0.3);
+        }
+
+        /* Quotes */
+        .quotes-container {
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quote-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.2));
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .quote-card p {
+            color: #fff;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 2rem;
+            }
+            
+            .tab-nav {
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-container">
+        <div class="fog"></div>
+        <div class="fog"></div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-text" id="welcomeText">Welcome to TKJ Website</div>
+        <div class="owner-profile" id="ownerProfile" style="display: none;">
+            <img src="https://files.catbox.moe/0s7ljf.jpg" alt="Owner">
+            <div class="owner-name">Owner : Frs</div>
+        </div>
+    </div>
+
+    <!-- Video Screen -->
+    <div class="video-screen" id="videoScreen">
+        <video id="introVideo" autoplay muted>
+            <source src="https://files.catbox.moe/7icwxr.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <button class="request-btn" onclick="openModal()">Request Fitur</button>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('gallery')">Galeri TKJ</button>
+            <button class="tab-btn" onclick="switchTab('music')">Favorit Music</button>
+            <button class="tab-btn" onclick="switchTab('quotes')">Kata-kata Penyemangat</button>
+        </div>
+
+        <div id="gallery" class="tab-content active">
+            <div class="gallery">
+                <img src="https://files.catbox.moe/rdthhv.jpg" alt="TKJ 1">
+                <img src="https://files.catbox.moe/c357ux.jpg" alt="TKJ 2">
+                <img src="https://files.catbox.moe/2nd6su.jpg" alt="TKJ 3">
+                <img src="https://files.catbox.moe/p8vapn.jpg" alt="TKJ 4">
+                <img src="https://files.catbox.moe/0s7ljf.jpg" alt="TKJ 5">
+            </div>
+        </div>
+
+        <div id="music" class="tab-content">
+            <div class="music-container">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/artist/6vP4azTCk053nGL0xAYnVH?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/artist/7Gy1PxqrgsiqWF6JNYPHeB?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/artist/51kyrUsAVqUBcoDEMFkX12?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <div id="quotes" class="tab-content">
+            <div class="quotes-container">
+                <div class="quote-card">
+                    <p>"Belajar itu bukan tentang seberapa pintar kamu, tapi seberapa keras kamu berusaha. Tetap semangat!"</p>
+                </div>
+                <div class="quote-card">
+                    <p>"Di TKJ, kita tidak hanya belajar teknologi, tapi juga belajar bagaimana menghadapi tantangan dengan kepala dingin."</p>
+                </div>
+                <div class="quote-card">
+                    <p>"Setiap error adalah kesempatan untuk belajar. Jangan menyerah, debug terus sampai berhasil!"</p>
+                </div>
+                <div class="quote-card">
+                    <p>"Koding itu seperti hidup, kadang ada bug, tapi pasti ada solusinya. Keep coding, keep learning!"</p>
+                </div>
+                <div class="quote-card">
+                    <p>"Jaringan komputer menghubungkan dunia, dan kamu adalah bagian dari revolusi itu. Bangga jadi anak TKJ!"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <img src="https://files.catbox.moe/0s7ljf.jpg" alt="Frs">
+            <h3>Frs</h3>
+            <a href="https://wa.me/6285863576656" class="wa-btn" target="_blank">💬 Chat WhatsApp</a>
+        </div>
+    </div>
+
+    <script>
+        // Welcome Animation
+        setTimeout(() => {
+            document.getElementById('welcomeText').style.display = 'none';
+            document.getElementById('ownerProfile').style.display = 'flex';
+        }, 3000);
+
+        setTimeout(() => {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            welcomeScreen.style.transition = 'opacity 1s ease';
+            welcomeScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                
+                // Show video
+                const videoScreen = document.getElementById('videoScreen');
+                videoScreen.style.display = 'flex';
+                videoScreen.style.transition = 'opacity 1s ease';
+                setTimeout(() => {
+                    videoScreen.style.opacity = '1';
+                }, 100);
+                
+                const video = document.getElementById('introVideo');
+                video.muted = false;
+                video.play();
+                
+                video.addEventListener('ended', () => {
+                    videoScreen.style.transition = 'opacity 1s ease';
+                    videoScreen.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        videoScreen.style.display = 'none';
+                        const mainContent = document.getElementById('mainContent');
+                        mainContent.style.display = 'block';
+                        setTimeout(() => {
+                            mainContent.style.transition = 'opacity 1s ease';
+                            mainContent.style.opacity = '1';
+                        }, 100);
+                    }, 1000);
+                });
+            }, 1000);
+        }, 6000);
+
+        // Tab Switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const btns = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            btns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Modal
+        function openModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
